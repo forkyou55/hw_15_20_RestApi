@@ -1,112 +1,145 @@
 package in.reqres;
 
+import models.lombok.RegistrationBodyLombokModel;
+import models.lombok.UserBodyLombokModel;
+import models.pojo.RegistrationBodyPojoModel;
+import models.pojo.UserBodyPojoModel;
 import org.junit.jupiter.api.Test;
 
 import static io.restassured.RestAssured.given;
-import static io.restassured.http.ContentType.JSON;
 import static org.hamcrest.Matchers.hasItems;
 import static org.hamcrest.Matchers.is;
+import static specs.BaseSpecs.baseRequestSpec;
+import static specs.BaseSpecs.baseResponseSpec;
+import static specs.CreateSpecs.createRequestSpec;
+import static specs.CreateSpecs.createResponseSpec;
+import static specs.RegistrationSpecs.registrationRequestSpec;
+import static specs.RegistrationSpecs.registrationResponseSpec;
+import static specs.UpdateSpecs.updateSpecs;
 
 public class InReqresTests {
-
     @Test
-    void registrationTest() {
-        String data = "{ \"email\": \"eve.holt@reqres.in\", \"password\": \"pistol\" }";
+    void registrationWithPojoTest() {
+        RegistrationBodyPojoModel registrationBody = new RegistrationBodyPojoModel();
+        registrationBody.setEmail("eve.holt@reqres.in");
+        registrationBody.setPassword("pistol");
+
         given()
-                .log().uri()
-                .contentType(JSON)
-                .body(data)
+                .spec(registrationRequestSpec)
+                .body(registrationBody)
                 .when()
-                .post("https://reqres.in/api/register")
+                .post()
                 .then()
-                .log().status()
-                .log().body()
-                .statusCode(200)
-                .body("id", is(4),
-                        "token", is("QpwL5tke4Pnpja7X4"));
+                .spec(registrationResponseSpec)
+                .body("id", is(4))
+                .body("token", is("QpwL5tke4Pnpja7X4"));
     }
-
     @Test
-    void updateTest() {
-        String data = "{ \"name\": \"morpheus\", \"job\": \"zion resident\" }";
+    void registrationWithLombokTest() {
+        RegistrationBodyLombokModel registrationBody = new RegistrationBodyLombokModel();
+        registrationBody.setEmail("eve.holt@reqres.in");
+        registrationBody.setPassword("pistol");
+
         given()
-                .log().uri()
-                .contentType(JSON)
-                .body(data)
+                .spec(registrationRequestSpec)
+                .body(registrationBody)
                 .when()
-                .put("https://reqres.in/api/users/2")
+                .post()
                 .then()
-                .log().status()
-                .log().body()
-                .statusCode(200);
+                .spec(registrationResponseSpec)
+                .body("id", is(4))
+                .body("token", is("QpwL5tke4Pnpja7X4"));
     }
-
     @Test
-    void createTest() {
-        String data = "{ \"name\": \"morpheus\", \"job\": \"leader\" }";
+    void updateWithPojoTest() {
+        UserBodyPojoModel userBody = new UserBodyPojoModel();
+        userBody.setName("morpheus");
+        userBody.setJob("leader");
         given()
-                .log().uri()
-                .contentType(JSON)
-                .body(data)
+                .spec(createRequestSpec)
+                .body(userBody)
                 .when()
-                .post("https://reqres.in/api/users")
+                .put("/2")
                 .then()
-                .log().status()
-                .log().body()
-                .statusCode(201)
-                .body(  "name", is("morpheus"),
-                        "job", is("leader"));
+                .spec(updateSpecs)
+                .body("name", is("morpheus"))
+                .body("job", is("leader"));
+    }
+    @Test
+    void updateWithLombokTest() {
+        UserBodyLombokModel userBody = new UserBodyLombokModel();
+        userBody.setName("morpheus");
+        userBody.setJob("leader");
+        given()
+                .spec(createRequestSpec)
+                .body(userBody)
+                .when()
+                .put("/2")
+                .then()
+                .spec(updateSpecs)
+                .body("name", is("morpheus"))
+                .body("job", is("leader"));
+    }
+    @Test
+    void createPojoTest() {
+        UserBodyPojoModel userBody = new UserBodyPojoModel();
+        userBody.setName("morpheus");
+        userBody.setJob("leader");
+
+        given()
+                .spec(createRequestSpec)
+                .body(userBody)
+                .when()
+                .post()
+                .then()
+                .spec(createResponseSpec)
+                .body("name", is("morpheus"))
+                .body("job", is("leader"));
+    }
+    @Test
+    void createLombokTest() {
+        UserBodyLombokModel userBody = new UserBodyLombokModel();
+        userBody.setName("morpheus");
+        userBody.setJob("leader");
+
+        given()
+                .spec(createRequestSpec)
+                .body(userBody)
+                .when()
+                .post()
+                .then()
+                .spec(createResponseSpec)
+                .body("name", is("morpheus"))
+                .body("job", is("leader"));
     }
     @Test
     void deleteTest() {
         given()
-                .log().uri()
-                .contentType(JSON)
+                .spec(baseRequestSpec)
                 .when()
-                .delete("https://reqres.in/api/users/2")
+                .delete("/api/users/2")
                 .then()
-                .log().status()
+                .spec(baseResponseSpec)
                 .statusCode(204);
     }
     @Test
     void listUsersTest() {
         given()
-                .log().uri()
-                .contentType(JSON)
+                .spec(baseRequestSpec)
                 .when()
-                .get("https://reqres.in/api/users?page=2")
+                .get("/api/users?page=2")
                 .then()
-                .log().status()
+                .spec(baseResponseSpec)
                 .statusCode(200);
-    }
-
-    @Test
-    void singleResourceTest() {
-        given()
-                .log().uri()
-                .contentType(JSON)
-                .when()
-                .get("https://reqres.in/api/unknown/2")
-                .then()
-                .log().status()
-                .log().body()
-                .statusCode(200)
-                .body("data.id", is(2))
-                .body("data.name", is("fuchsia rose"))
-                .body("data.year", is(2001))
-                .body("data.color", is("#C74375"))
-                .body("data.pantone_value", is("17-2031"));
     }
     @Test
     void idUserTest() {
         given()
-                .log().uri()
-                .contentType(JSON)
+                .spec(baseRequestSpec)
                 .when()
-                .get("https://reqres.in/api/users?page=2")
+                .get("/api/users?page=2")
                 .then()
-                .log().status()
-                .log().body()
+                .spec(baseResponseSpec)
                 .statusCode(200)
                 .body("data.id", hasItems(7, 8, 9, 10, 11, 12));
     }
