@@ -62,8 +62,8 @@ public class InReqresTests {
                 .put("/2")
                 .then()
                 .spec(updateSpecs)
-                .body("name", is("morpheus"))
-                .body("job", is("leader"));
+                .body("name", is(userBody.getName()))
+                .body("job", is(userBody.getJob()));
     }
     @Test
     void updateWithLombokTest() {
@@ -77,8 +77,8 @@ public class InReqresTests {
                 .put("/2")
                 .then()
                 .spec(updateSpecs)
-                .body("name", is("morpheus"))
-                .body("job", is("leader"));
+                .body("name", is(userBody.getName()))
+                .body("job", is(userBody.getJob()));
     }
     @Test
     void createPojoTest() {
@@ -93,8 +93,8 @@ public class InReqresTests {
                 .post()
                 .then()
                 .spec(createResponseSpec)
-                .body("name", is("morpheus"))
-                .body("job", is("leader"));
+                .body("name", is(userBody.getName()))
+                .body("job", is(userBody.getJob()));
     }
     @Test
     void createLombokTest() {
@@ -109,8 +109,8 @@ public class InReqresTests {
                 .post()
                 .then()
                 .spec(createResponseSpec)
-                .body("name", is("morpheus"))
-                .body("job", is("leader"));
+                .body("name", is(userBody.getName()))
+                .body("job", is(userBody.getJob()));
     }
     @Test
     void deleteTest() {
